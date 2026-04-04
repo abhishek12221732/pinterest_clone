@@ -5,6 +5,8 @@ import '../../features/home/presentation/home_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/home/domain/pexels_model.dart';
+import '../../features/home/presentation/pin_detail_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -46,6 +48,14 @@ final goRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: '/pin',
+      builder: (context, state) {
+        // We pass the photo object through the router's extra state
+        final photo = state.extra as PexelsPhoto; 
+        return PinDetailScreen(photo: photo);
+      },
     ),
   ],
   // Simple redirect logic using Clerk
