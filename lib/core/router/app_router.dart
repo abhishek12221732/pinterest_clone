@@ -49,12 +49,15 @@ final goRouter = GoRouter(
         ),
       ],
     ),
-    GoRoute(
+   GoRoute(
       path: '/pin',
       builder: (context, state) {
-        // We pass the photo object through the router's extra state
-        final photo = state.extra as PexelsPhoto; 
-        return PinDetailScreen(photo: photo);
+        // CHANGED: We now expect a Map containing the photo and the unique tag
+        final data = state.extra as Map<String, dynamic>; 
+        return PinDetailScreen(
+          photo: data['photo'] as PexelsPhoto,
+          heroTag: data['heroTag'] as String,
+        );
       },
     ),
   ],

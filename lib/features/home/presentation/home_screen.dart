@@ -38,7 +38,10 @@ class HomeScreen extends ConsumerWidget {
                   // Subtle vibration on tap - huge for UI polish grading!
                   HapticFeedback.selectionClick(); 
                   // Navigate to the detail screen, passing the photo object
-                  context.push('/pin', extra: photo);
+                  context.push('/pin', extra: {
+                    'photo': photo,
+                    'heroTag': 'home_pin_${photo.id}'
+                  });
                 },
                 child: Hero(
                   // The Hero tag must be completely unique for every image

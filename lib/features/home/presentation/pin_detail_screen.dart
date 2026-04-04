@@ -5,8 +5,9 @@ import '../domain/pexels_model.dart';
 
 class PinDetailScreen extends StatelessWidget {
   final PexelsPhoto photo;
+  final String heroTag;
 
-  const PinDetailScreen({super.key, required this.photo});
+  const PinDetailScreen({super.key, required this.photo, required this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +24,7 @@ class PinDetailScreen extends StatelessWidget {
             backgroundColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
-                // The tag must match the one on the Home Screen exactly
-                tag: 'pin_${photo.id}', 
+                tag: heroTag, 
                 child: CachedNetworkImage(
                   imageUrl: photo.imageUrl,
                   fit: BoxFit.cover,
