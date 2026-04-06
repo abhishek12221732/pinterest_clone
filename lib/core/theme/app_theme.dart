@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // The iconic Pinterest Red
   static const Color pinterestRed = Color(0xFFE60023);
 
-  // --- LIGHT THEME ---
   static ThemeData get lightTheme {
     return ThemeData(
       brightness: Brightness.light,
       primaryColor: pinterestRed,
       scaffoldBackgroundColor: Colors.white,
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+      // DM Sans is a wide, geometric font that closely mimics Pinterest's custom font
+      textTheme: GoogleFonts.dmSansTextTheme(ThemeData.light().textTheme),
       colorScheme: const ColorScheme.light(
         primary: pinterestRed,
         secondary: Colors.black,
@@ -32,22 +31,21 @@ class AppTheme {
         elevation: 8,
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        selectedIconTheme: IconThemeData(size: 28),
+        unselectedIconTheme: IconThemeData(size: 28),
       ),
-      // Pinterest removes the default Android ripple effect for a more iOS-like feel
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       useMaterial3: true,
     );
   }
 
-  // --- DARK THEME ---
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: pinterestRed,
-      // Pinterest uses true black for OLED screens
       scaffoldBackgroundColor: Colors.black, 
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+      textTheme: GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme),
       colorScheme: const ColorScheme.dark(
         primary: pinterestRed,
         secondary: Colors.white,
@@ -68,6 +66,8 @@ class AppTheme {
         elevation: 8,
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        selectedIconTheme: IconThemeData(size: 28),
+        unselectedIconTheme: IconThemeData(size: 28),
       ),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
