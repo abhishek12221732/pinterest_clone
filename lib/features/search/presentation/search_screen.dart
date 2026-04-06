@@ -68,6 +68,7 @@ class SearchScreen extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(16),
                               child: CachedNetworkImage(
                                 imageUrl: photo.imageUrl,
+                                memCacheWidth: 400,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Shimmer.fromColors(
                                   baseColor: Colors.grey[300]!,
