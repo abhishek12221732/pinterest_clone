@@ -185,12 +185,16 @@ class _PinGridItemState extends State<PinGridItem> {
                 imageUrl: widget.photo.imageUrl,
                 memCacheWidth: 400,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(height: 200, color: Colors.white),
+                // 1. Smooth, theme-aware shimmer
+                placeholder: (context, url) => buildSmoothShimmer(context),
+                // 2. Extend the fade-in slightly and use a smooth curve to mask the layout jump
+                fadeInDuration: const Duration(milliseconds: 400),
+                fadeInCurve: Curves.easeOutCubic,
+                errorWidget: (context, url, error) => Container(
+                  height: 250,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Colors.grey[200],
+                  child: const Icon(Icons.broken_image, color: Colors.grey),
                 ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
           ),
@@ -363,4 +367,27 @@ class RadialMenuOverlay extends StatelessWidget {
       ),
     );
   }
+}
+
+// Theme-aware, perfectly rounded Shimmer placeholder
+Widget buildSmoothShimmer(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  // Match the shimmer perfectly to the current theme
+  final baseColor = isDark ? Colors.grey[850]! : Colors.grey[300]!;
+  final highlightColor = isDark ? Colors.grey[800]! : Colors.grey[100]!;
+  final containerColor = isDark ? const Color(0xFF2B2B2B) : Colors.white;
+
+  return Shimmer.fromColors(
+    baseColor: baseColor,
+    highlightColor: highlightColor,
+    child: Container(
+      // Removing the hardcoded 200 height and using a default generic height
+      // combined with a smooth radius prevents the ugly box flash
+      height: 250, 
+      decoration: BoxDecoration(
+        color: containerColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+    ),
+  );
 }
