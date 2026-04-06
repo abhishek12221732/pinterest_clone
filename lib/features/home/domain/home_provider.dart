@@ -9,9 +9,9 @@ final homeFeedProvider = FutureProvider.family<List<PexelsPhoto>, String>((ref, 
   final dioClient = ref.read(dioProvider); 
   final query = category == 'All' ? 'aesthetic pinterest' : category;
   
-  // THE FIX: Generate a random page number between 1 and 10
+  // THE FIX: Generate a random page number between 1 and 30
   // so every refresh gets a brand new set of images.
-  final randomPage = Random().nextInt(10) + 1;
+  final randomPage = Random().nextInt(20) + 1;
   
   // Pass the random page to the API
   final response = await dioClient.dio.get('search?query=$query&per_page=30&page=$randomPage');

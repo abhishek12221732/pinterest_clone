@@ -72,16 +72,23 @@ class HomeScreen extends ConsumerWidget {
         slivers: [
           // THE MAGIC: A fully customizable refresh sliver
           CupertinoSliverRefreshControl(
+            // Require a slightly longer, more deliberate pull before triggering
+            refreshTriggerPullDistance: 120.0, 
             onRefresh: () async {
               HapticFeedback.mediumImpact();
-              return ref.refresh(homeFeedProvider(category).future);
-            },
-            // The builder exposes exactly how far the user has pulled down
-            builder: (context, refreshState, pulledExtent, refreshTriggerPullDistance, refreshIndicatorExtent) {
-              // Calculate percentage pulled (0.0 to 1.0)
-              final percentage = (pulledExtent / refreshTriggerPullDistance).clamp(0.0, 1.0);
               
-              // Determine if the network request is actively running
+              // 1. Start the network request
+              final refreshTask = ref.refresh(homeFeedProvider(category).future);
+              
+              // 2. Enforce a minimum 1.2-second delay so the spinner animation 
+              // always has time to look smooth and deliberate, even on fast Wi-Fi.
+              final minimumDelay = Future.delayed(const Duration(milliseconds: 1200));
+              
+              // 3. Wait for BOTH to finish before dismissing the spinner
+              await Future.wait([refreshTask, minimumDelay]);
+            },
+            builder: (context, refreshState, pulledExtent, refreshTriggerPullDistance, refreshIndicatorExtent) {
+              final percentage = (pulledExtent / refreshTriggerPullDistance).clamp(0.0, 1.0);
               final isActivelyRefreshing = refreshState == RefreshIndicatorMode.refresh || 
                                            refreshState == RefreshIndicatorMode.armed;
 

@@ -68,7 +68,6 @@ class MainScaffold extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Swapped to rounded material icons here too
                     _buildCreateOption(context, Icons.push_pin_rounded, 'Pin'),
                     _buildCreateOption(context, Icons.dashboard_customize_rounded, 'Collage'),
                     _buildCreateOption(context, Icons.space_dashboard_rounded, 'Board'),
@@ -111,47 +110,81 @@ class MainScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = Theme.of(context).colorScheme.secondary;
+
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: (index) {
-          if (index == 2) {
-            _showCreateModal(context);
-            return;
-          }
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
-        items: const [
-          BottomNavigationBarItem(
-            // Modern rounded outlines for unselected, filled for selected
-            icon: Icon(Icons.home_outlined), 
-            activeIcon: Icon(Icons.home_filled), 
-            label: 'Home'
+      bottomNavigationBar: Container(
+        // 1. STRICT HEIGHT CONTROL: Forces the nav bar to be shorter (standard is 60-65)
+        height: 54, 
+        decoration: BoxDecoration(
+          border: Border(
+            // Optional: Adds that microscopic hair-line border at the top of the nav bar
+            top: BorderSide(color: isDark ? Colors.grey[900]! : Colors.grey[300]!, width: 0.5),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_rounded), 
-            activeIcon: Icon(Icons.search_rounded), 
-            label: 'Search'
+        ),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add, size: 34), 
-            label: 'Create'
-          ), 
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline_rounded), 
-            activeIcon: Icon(Icons.chat_bubble_rounded), 
-            label: 'Inbox'
+          child: BottomNavigationBar(
+            backgroundColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+            type: BottomNavigationBarType.fixed,
+            
+            // 2. OBLITERATE GHOST PADDING: 
+            showSelectedLabels: false, 
+            showUnselectedLabels: false,
+            selectedFontSize: 0.0,
+            unselectedFontSize: 0.0,
+            
+            // Scaled the icons down just a hair so they fit the new tight height perfectly
+            iconSize: 30, 
+            
+            selectedItemColor: textColor,
+            unselectedItemColor: isDark ? Colors.grey[500] : Colors.grey[400],
+            
+            currentIndex: navigationShell.currentIndex,
+            onTap: (index) {
+              if (index == 2) {
+                _showCreateModal(context);
+                return;
+              }
+              navigationShell.goBranch(
+                index,
+                initialLocation: index == navigationShell.currentIndex,
+              );
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined), 
+                activeIcon: Icon(Icons.home_filled), 
+                label: ''
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search_rounded), 
+                activeIcon: Icon(Icons.search_rounded), 
+                label: ''
+              ),
+              BottomNavigationBarItem(
+                // The center Add is still slightly larger than the rest
+                icon: Icon(Icons.add_rounded, size: 36), 
+                label: ''
+              ), 
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat_bubble_outline_rounded), 
+                activeIcon: Icon(Icons.chat_bubble_rounded), 
+                label: ''
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline_rounded), 
+                activeIcon: Icon(Icons.person_rounded), 
+                label: ''
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline_rounded), 
-            activeIcon: Icon(Icons.person_rounded), 
-            label: 'Profile'
-          ),
-        ],
+        ),
       ),
     );
   }
