@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:clerk_flutter/clerk_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart'; // Import our new theme
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,15 +32,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClerkAuth(
-      // FIXED: publishableKey must be passed inside ClerkAuthConfig
-      config: ClerkAuthConfig(publishableKey: publishableKey), 
+      config: ClerkAuthConfig(publishableKey: publishableKey),
       child: MaterialApp.router(
         title: 'Pinterest Clone',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
-          useMaterial3: true,
-          scaffoldBackgroundColor: Colors.white,
-        ),
+        
+        // --- NEW THEMING ENGINE ---
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system, // Automatically switches based on OS settings
+        
         routerConfig: goRouter,
         debugShowCheckedModeBanner: false,
       ),
