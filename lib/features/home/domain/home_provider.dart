@@ -1,23 +1,21 @@
+import 'dart:math'; // Required for random numbers
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/network/dio_client.dart';
 import 'pexels_model.dart';
 
-// Provider for the Dio client
 final dioProvider = Provider<DioClient>((ref) => DioClient());
 
-// The upgraded family provider that handles tabs and pull-to-refresh
 final homeFeedProvider = FutureProvider.family<List<PexelsPhoto>, String>((ref, category) async {
-  
-  // 1. Get your existing Dio client
   final dioClient = ref.read(dioProvider); 
-  
-  // 2. Map the category to a good search term
   final query = category == 'All' ? 'aesthetic pinterest' : category;
   
-  // 3. Hit the SEARCH endpoint (instead of curated) so we get category-specific images
-  final response = await dioClient.dio.get('search?query=$query&per_page=30');
+  // THE FIX: Generate a random page number between 1 and 10
+  // so every refresh gets a brand new set of images.
+  final randomPage = Random().nextInt(10) + 1;
   
-  // 4. Parse the JSON and return the list of photos
+  // Pass the random page to the API
+  final response = await dioClient.dio.get('search?query=$query&per_page=30&page=$randomPage');
+  
   final List<dynamic> photosJson = response.data['photos'];
   return photosJson.map((json) => PexelsPhoto.fromJson(json)).toList();
 });

@@ -47,11 +47,9 @@ class _PinterestFourDotSpinnerState extends State<PinterestFourDotSpinner> with 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    // The background circle of the spinner
     final bgColor = isDark ? const Color(0xFF333333) : Colors.white;
-    // The color of the 3 generic dots
-    final dotColor = isDark ? Colors.white : Colors.black87;
+    // Exactly uniform Pinterest grey for all dots
+    final dotColor = isDark ? Colors.grey[400]! : Colors.grey[600]!;
 
     // As the user pulls down, the spinner rotates slightly
     final pullRotation = widget.percentage * math.pi;
@@ -83,7 +81,7 @@ class _PinterestFourDotSpinnerState extends State<PinterestFourDotSpinner> with 
                   spacing: 4,
                   runSpacing: 4,
                   children: [
-                    _buildDot(const Color(0xFFE60023)), // The signature Pinterest Red dot
+                    _buildDot(dotColor), // The signature Pinterest Red dot
                     _buildDot(dotColor),
                     _buildDot(dotColor),
                     _buildDot(dotColor),

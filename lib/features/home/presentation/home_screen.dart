@@ -9,6 +9,8 @@ import 'package:go_router/go_router.dart';
 import '../domain/home_provider.dart';
 import '../domain/pexels_model.dart';
 import '../../../core/widgets/pinterest_loader.dart';
+import 'package:flutter/cupertino.dart';
+import '../../../core/widgets/pinterest_pull_spinner.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -61,40 +63,59 @@ class HomeScreen extends ConsumerWidget {
 
   // A helper method to build the content for a specific tab
   Widget _buildTabContent(BuildContext context, WidgetRef ref, String category, Color iconColor) {
-    // Watch the specific state for THIS category
     final feedState = ref.watch(homeFeedProvider(category));
 
     return feedState.when(
-      data: (photos) => RefreshIndicator(
-        // Aggressive Pinterest styling for the pull-to-refresh
-        color: const Color(0xFFE60023), // Pinterest Red
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        strokeWidth: 3,
-        // The actual refresh logic
-        onRefresh: () async {
-          HapticFeedback.mediumImpact();
-          // This forces Riverpod to re-run the Future for this specific category
-          return ref.refresh(homeFeedProvider(category).future);
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: MasonryGridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            itemCount: photos.length,
-            itemBuilder: (context, index) {
-              return PinGridItem(photo: photos[index], iconColor: iconColor);
+      data: (photos) => CustomScrollView(
+        // AlwaysScrollable is required so you can pull down even if the grid isn't full
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        slivers: [
+          // THE MAGIC: A fully customizable refresh sliver
+          CupertinoSliverRefreshControl(
+            onRefresh: () async {
+              HapticFeedback.mediumImpact();
+              return ref.refresh(homeFeedProvider(category).future);
+            },
+            // The builder exposes exactly how far the user has pulled down
+            builder: (context, refreshState, pulledExtent, refreshTriggerPullDistance, refreshIndicatorExtent) {
+              // Calculate percentage pulled (0.0 to 1.0)
+              final percentage = (pulledExtent / refreshTriggerPullDistance).clamp(0.0, 1.0);
+              
+              // Determine if the network request is actively running
+              final isActivelyRefreshing = refreshState == RefreshIndicatorMode.refresh || 
+                                           refreshState == RefreshIndicatorMode.armed;
+
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: PinterestFourDotSpinner(
+                    percentage: percentage,
+                    isRefreshing: isActivelyRefreshing,
+                  ),
+                ),
+              );
             },
           ),
-        ),
+          
+          // The main Masonry Grid, converted to a Sliver
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            sliver: SliverMasonryGrid.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childCount: photos.length,
+              itemBuilder: (context, index) {
+                return PinGridItem(photo: photos[index], iconColor: iconColor);
+              },
+            ),
+          ),
+        ],
       ),
-      // Use our brilliant new custom loader!
-      loading: () => const PinterestLoader(),
+      loading: () => const PinterestLoader(), // The 3-dot center loader for initial load
       error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
-
 
   Widget _buildMasonryGrid(AsyncValue feedState, Color iconColor) {
     return feedState.when(
