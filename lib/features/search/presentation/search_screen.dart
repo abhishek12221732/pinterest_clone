@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
 import '../domain/search_provider.dart';
 import '../../home/domain/home_provider.dart';
+import '../../../core/widgets/pinterest_loader.dart'; // Import the custom loader
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -40,7 +41,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final searchState = ref.watch(searchProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = Theme.of(context).colorScheme.secondary;
-    // Pinterest uses a very dark grey for the search bar in dark mode, almost blending in
     final searchBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200]; 
 
     return Scaffold(
@@ -59,7 +59,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       decoration: BoxDecoration(
                         color: searchBarColor,
                         borderRadius: BorderRadius.circular(25),
-                        // Slight border to match the screenshot
                         border: Border.all(color: isDark ? Colors.grey[800]! : Colors.transparent, width: 1),
                       ),
                       child: TextField(
@@ -119,7 +118,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ],
         ),
       ),
-      // The floating search FAB visible in the bottom right of the screenshot
       floatingActionButton: !_isSearching ? FloatingActionButton(
         onPressed: () {},
         backgroundColor: isDark ? const Color(0xFF333333) : Colors.white,
@@ -135,6 +133,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   // ===========================================================================
   Widget _buildExploreState(Color textColor, bool isDark) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -156,7 +155,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
                         ),
                       ),
-                      alignment: Alignment.centerLeft, // Matches screenshot alignment
+                      alignment: Alignment.centerLeft, 
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
                         item['title']!,
@@ -165,7 +164,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     );
                   },
                 ),
-                // Pagination Dots
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Row(
@@ -186,7 +184,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           
           const SizedBox(height: 32),
 
-          // Featured Boards Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -200,7 +197,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
           const SizedBox(height: 16),
           
-          // Horizontally Scrolling Collage Cards
           SizedBox(
             height: 280,
             child: ListView.builder(
@@ -215,7 +211,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
           const SizedBox(height: 24),
 
-          // Ideas For You Section (Korean example from screenshot)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -223,20 +218,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               children: [
                 Text('Ideas for you', style: TextStyle(color: Colors.grey[400], fontSize: 14, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 4),
-                // Text('Learn korean', style: TextStyle(color: textColor, fontSize: 24, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          _buildInitialGrid(textColor),
+          _buildInitialGrid(context, textColor), // Pass context for shimmer
         ],
       ),
     );
   }
 
-  // ===========================================================================
-  // The Complex Collage Board Card (1 Big Image Left, 2 Small Stacked Right)
-  // ===========================================================================
   Widget _buildCollageBoardCard(Map<String, dynamic> board, Color textColor, bool isDark) {
     return Container(
       width: 280,
@@ -244,7 +235,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image Collage Frame
           Container(
             height: 180,
             decoration: BoxDecoration(
@@ -254,13 +244,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             clipBehavior: Clip.hardEdge,
             child: Row(
               children: [
-                // Big Left Image
                 Expanded(
                   flex: 2,
                   child: CachedNetworkImage(imageUrl: board['mainImage'], fit: BoxFit.cover, height: double.infinity),
                 ),
-                const SizedBox(width: 2), // Small divider line
-                // Stacked Right Images
+                const SizedBox(width: 2), 
                 Expanded(
                   flex: 1,
                   child: Column(
@@ -275,7 +263,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          // Metadata
           Text(board['title'], style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 4),
           Row(
@@ -313,19 +300,32 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               final photo = photos[index];
               return ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: CachedNetworkImage(imageUrl: photo.imageUrl, memCacheWidth: 400, fit: BoxFit.cover),
+                child: CachedNetworkImage(
+                  imageUrl: photo.imageUrl, 
+                  memCacheWidth: 400, 
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => buildSmoothShimmer(context),
+                  fadeInDuration: const Duration(milliseconds: 400),
+                  fadeInCurve: Curves.easeOutCubic,
+                  errorWidget: (context, url, error) => Container(
+                    height: 250,
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Colors.grey[200],
+                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                  ),
+                ),
               );
             },
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator(color: Colors.red)),
+      loading: () => const PinterestLoader(), // Use the new loader
       error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
 
-  Widget _buildInitialGrid(Color iconColor) {
-    final initialFeedState = ref.watch(homeFeedProvider); 
+  Widget _buildInitialGrid(BuildContext context, Color iconColor) {
+    // FIX: Pass the required string argument to the family provider
+    final initialFeedState = ref.watch(homeFeedProvider('All')); 
     return initialFeedState.when(
       data: (photos) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -340,18 +340,30 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             final photo = photos[index];
             return ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: CachedNetworkImage(imageUrl: photo.imageUrl, memCacheWidth: 400, fit: BoxFit.cover),
+              child: CachedNetworkImage(
+                imageUrl: photo.imageUrl, 
+                memCacheWidth: 400, 
+                fit: BoxFit.cover,
+                placeholder: (context, url) => buildSmoothShimmer(context),
+                fadeInDuration: const Duration(milliseconds: 400),
+                fadeInCurve: Curves.easeOutCubic,
+                errorWidget: (context, url, error) => Container(
+                  height: 250,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Colors.grey[200],
+                  child: const Icon(Icons.broken_image, color: Colors.grey),
+                ),
+              ),
             );
           },
         ),
       ),
-      loading: () => const Center(child: CircularProgressIndicator(color: Colors.red)),
+      loading: () => const PinterestLoader(), // Use the new loader
       error: (err, stack) => const SizedBox(),
     );
   }
 
   // ===========================================================================
-  // MOCK DATA TO MATCH SCREENSHOT
+  // MOCK DATA
   // ===========================================================================
   final List<Map<String, String>> _mockIdeas = [
     {'title': 'Start a nature journal', 'image': 'https://images.pexels.com/photos/4096964/pexels-photo-4096964.jpeg?auto=compress&cs=tinysrgb&w=800'},
@@ -386,7 +398,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 // Theme-aware, perfectly rounded Shimmer placeholder
 Widget buildSmoothShimmer(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
-  // Match the shimmer perfectly to the current theme
   final baseColor = isDark ? Colors.grey[850]! : Colors.grey[300]!;
   final highlightColor = isDark ? Colors.grey[800]! : Colors.grey[100]!;
   final containerColor = isDark ? const Color(0xFF2B2B2B) : Colors.white;
@@ -395,8 +406,6 @@ Widget buildSmoothShimmer(BuildContext context) {
     baseColor: baseColor,
     highlightColor: highlightColor,
     child: Container(
-      // Removing the hardcoded 200 height and using a default generic height
-      // combined with a smooth radius prevents the ugly box flash
       height: 250, 
       decoration: BoxDecoration(
         color: containerColor,

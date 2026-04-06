@@ -1,39 +1,23 @@
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/network/dio_client.dart';
 import 'pexels_model.dart';
 
-// Provider for the Dio client so it can be injected
+// Provider for the Dio client
 final dioProvider = Provider<DioClient>((ref) => DioClient());
 
-// Modern Riverpod 2.x AsyncNotifier
-class HomeFeedNotifier extends AsyncNotifier<List<PexelsPhoto>> {
+// The upgraded family provider that handles tabs and pull-to-refresh
+final homeFeedProvider = FutureProvider.family<List<PexelsPhoto>, String>((ref, category) async {
   
-  @override
-  FutureOr<List<PexelsPhoto>> build() async {
-    // build() automatically sets the state to AsyncValue.loading() 
-    // while it waits for this function to finish.
-    return _fetchCuratedPhotos();
-  }
-
-  Future<List<PexelsPhoto>> _fetchCuratedPhotos() async {
-    final dioClient = ref.read(dioProvider); // Use ref.read inside notifiers
-    
-    // Pexels curated endpoint gets random high-quality images
-    final response = await dioClient.dio.get('curated?per_page=30');
-    
-    final List<dynamic> photosJson = response.data['photos'];
-    return photosJson.map((json) => PexelsPhoto.fromJson(json)).toList();
-  }
-
-  // A helper method if you want to implement "pull-to-refresh" later
-  Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _fetchCuratedPhotos());
-  }
-}
-
-// The modern provider that the UI will listen to
-final homeFeedProvider = AsyncNotifierProvider<HomeFeedNotifier, List<PexelsPhoto>>(() {
-  return HomeFeedNotifier();
+  // 1. Get your existing Dio client
+  final dioClient = ref.read(dioProvider); 
+  
+  // 2. Map the category to a good search term
+  final query = category == 'All' ? 'aesthetic pinterest' : category;
+  
+  // 3. Hit the SEARCH endpoint (instead of curated) so we get category-specific images
+  final response = await dioClient.dio.get('search?query=$query&per_page=30');
+  
+  // 4. Parse the JSON and return the list of photos
+  final List<dynamic> photosJson = response.data['photos'];
+  return photosJson.map((json) => PexelsPhoto.fromJson(json)).toList();
 });

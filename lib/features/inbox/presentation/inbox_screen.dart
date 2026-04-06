@@ -134,7 +134,7 @@ class InboxScreen extends StatelessWidget {
               ),
               _buildUpdateTile(
                 context: context,
-                imageUrl: 'https://images.pexels.com/photos/1036814/pexels-photo-1036814.jpeg?auto=compress&cs=tinysrgb&w=200',
+                imageUrl: 'https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg?auto=compress&cs=tinysrgb&w=400',
                 title: 'Dark academia aesthetics · Mar 15, 2026',
                 textColor: textColor,
               ),

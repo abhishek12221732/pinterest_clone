@@ -8,14 +8,17 @@ import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
 import '../domain/home_provider.dart';
 import '../domain/pexels_model.dart';
+import '../../../core/widgets/pinterest_loader.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final feedState = ref.watch(homeFeedProvider);
     final textColor = Theme.of(context).colorScheme.secondary;
+    
+    // Define the exact query strings for each tab
+    final categories = ['All', 'UI Design', 'Architecture', 'Motivation'];
 
     return DefaultTabController(
       length: 5,
@@ -44,16 +47,54 @@ class HomeScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            _buildMasonryGrid(feedState, textColor),
-            _buildMasonryGrid(feedState, textColor),
-            _buildMasonryGrid(feedState, textColor),
-            _buildMasonryGrid(feedState, textColor),
+            // We pass the specific category to each tab view!
+            _buildTabContent(context, ref, categories[0], textColor),
+            _buildTabContent(context, ref, categories[1], textColor),
+            _buildTabContent(context, ref, categories[2], textColor),
+            _buildTabContent(context, ref, categories[3], textColor),
             const Center(child: Text('Customize your home feed', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
           ],
         ),
       ),
     );
   }
+
+  // A helper method to build the content for a specific tab
+  Widget _buildTabContent(BuildContext context, WidgetRef ref, String category, Color iconColor) {
+    // Watch the specific state for THIS category
+    final feedState = ref.watch(homeFeedProvider(category));
+
+    return feedState.when(
+      data: (photos) => RefreshIndicator(
+        // Aggressive Pinterest styling for the pull-to-refresh
+        color: const Color(0xFFE60023), // Pinterest Red
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        strokeWidth: 3,
+        // The actual refresh logic
+        onRefresh: () async {
+          HapticFeedback.mediumImpact();
+          // This forces Riverpod to re-run the Future for this specific category
+          return ref.refresh(homeFeedProvider(category).future);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: MasonryGridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            itemCount: photos.length,
+            itemBuilder: (context, index) {
+              return PinGridItem(photo: photos[index], iconColor: iconColor);
+            },
+          ),
+        ),
+      ),
+      // Use our brilliant new custom loader!
+      loading: () => const PinterestLoader(),
+      error: (err, stack) => Center(child: Text('Error: $err')),
+    );
+  }
+
 
   Widget _buildMasonryGrid(AsyncValue feedState, Color iconColor) {
     return feedState.when(

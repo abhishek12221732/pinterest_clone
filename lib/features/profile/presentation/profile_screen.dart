@@ -373,7 +373,7 @@ final List<Map<String, dynamic>> _mockBoards = [
   {
     'title': 'Dark Academia Aesthetics',
     'pins': '156', 'time': '9mo',
-    'mainImage': 'https://images.pexels.com/photos/1036814/pexels-photo-1036814.jpeg?auto=compress&cs=tinysrgb&w=400',
+    'mainImage': 'https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg?auto=compress&cs=tinysrgb&w=400',
     'subImage1': 'https://images.pexels.com/photos/1762851/pexels-photo-1762851.jpeg?auto=compress&cs=tinysrgb&w=200',
     'subImage2': 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=200',
   },
