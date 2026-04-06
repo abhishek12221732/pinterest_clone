@@ -10,7 +10,7 @@ class LoginScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           // FIXED: This is the correct pre-built widget for Clerk in Flutter
-          child: ClerkAuthentication(), 
+          child: ClerkAuthentication(),
         ),
       ),
     );

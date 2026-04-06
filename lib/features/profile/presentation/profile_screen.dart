@@ -12,7 +12,7 @@ class ProfileScreen extends StatelessWidget {
     // Dynamically grab text colors from your design system
     final textColor = Theme.of(context).colorScheme.secondary;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final searchBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200]; 
+    final searchBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200];
     final buttonColor = isDark ? const Color(0xFF2B2B2B) : Colors.grey[200];
 
     // Wrap in DefaultTabController to manage the tabs
@@ -30,34 +30,58 @@ class ProfileScreen extends StatelessWidget {
               // This whole section is anchored to the top and remains visible.
               // ===============================================================
               Container(
-                color: Theme.of(context).scaffoldBackgroundColor, // Ensure the background is solid
+                color: Theme.of(
+                  context,
+                ).scaffoldBackgroundColor, // Ensure the background is solid
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // --- Row 1: Profile Icon AND TabBar on the same line ---
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
                       child: Row(
                         children: [
                           // Large circular avatar on the far left (Brown 'A' placeholder)
                           Container(
-                            width: 60, height: 60,
+                            width: 60,
+                            height: 60,
                             margin: const EdgeInsets.only(right: 16),
-                            decoration: const BoxDecoration(color: Color(0xFFC06619), shape: BoxShape.circle),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFC06619),
+                              shape: BoxShape.circle,
+                            ),
                             alignment: Alignment.center,
-                            child: const Text('A', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+                            child: const Text(
+                              'A',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                           // Expanded TabBar that shares the row space
                           Expanded(
                             child: TabBar(
-                              dividerColor: Colors.transparent, // Removes the standard bottom line
-                              indicatorColor: textColor, // The stark black indicator from screenshot
+                              dividerColor: Colors
+                                  .transparent, // Removes the standard bottom line
+                              indicatorColor:
+                                  textColor, // The stark black indicator from screenshot
                               indicatorSize: TabBarIndicatorSize.label,
                               labelColor: textColor,
                               unselectedLabelColor: Colors.grey[500],
-                              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                              ),
+                              unselectedLabelStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 17,
+                              ),
                               tabs: const [
                                 Tab(text: 'Pins'),
                                 Tab(text: 'Boards'),
@@ -68,26 +92,40 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     // --- Row 2: SearchBar and Add Icon (on the same line) ---
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
                       child: Row(
                         children: [
                           // Pill-shaped search bar for the profile section
                           Expanded(
                             child: Container(
                               height: 48,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               decoration: BoxDecoration(
                                 color: searchBarColor,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.search_rounded, color: Colors.grey[500]),
+                                  Icon(
+                                    Icons.search_rounded,
+                                    color: Colors.grey[500],
+                                  ),
                                   const SizedBox(width: 8),
-                                  Text('Search your Pins', style: TextStyle(color: Colors.grey[500], fontSize: 16)),
+                                  Text(
+                                    'Search your Pins',
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                      fontSize: 16,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -95,9 +133,13 @@ class ProfileScreen extends StatelessWidget {
                           const SizedBox(width: 8),
                           // The 'Add' icon from screenshot
                           IconButton(
-                            icon: Icon(Icons.add_rounded, color: textColor, size: 36),
+                            icon: Icon(
+                              Icons.add_rounded,
+                              color: textColor,
+                              size: 36,
+                            ),
                             onPressed: () => HapticFeedback.lightImpact(),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -107,18 +149,35 @@ class ProfileScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
-                          IconButton(icon: Icon(Icons.swap_vert_rounded, color: textColor), onPressed: () {}),
+                          IconButton(
+                            icon: Icon(
+                              Icons.swap_vert_rounded,
+                              color: textColor,
+                            ),
+                            onPressed: () {},
+                          ),
                           const SizedBox(width: 8),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: buttonColor,
                               foregroundColor: textColor,
                               elevation: 0,
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
                             ),
                             onPressed: () {},
-                            child: const Text('Group', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                            child: const Text(
+                              'Group',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -162,8 +221,18 @@ class ProfileScreen extends StatelessWidget {
         children: [
           const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text('Board suggestions', style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.bold)),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: Text(
+              'Board suggestions',
+              style: TextStyle(
+                color: textColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           // Horizontal carousel
           SizedBox(
@@ -182,33 +251,48 @@ class ProfileScreen extends StatelessWidget {
                     image: DecorationImage(
                       image: NetworkImage(suggestion['image']!),
                       fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.3),
+                        BlendMode.darken,
+                      ),
                     ),
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     suggestion['title']!,
-                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 );
               },
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Masonry Grid: "Your saved Pins"
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text('Your saved Pins', style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.bold)),
+            child: Text(
+              'Your saved Pins',
+              style: TextStyle(
+                color: textColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: MasonryGridView.count(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(), // Parent view handles scrolling
+              physics:
+                  const NeverScrollableScrollPhysics(), // Parent view handles scrolling
               crossAxisCount: 2,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
@@ -249,7 +333,11 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // Complex Board Card Widget (1 Big Image Left, 2 Small Stacked Right)
-  Widget _buildBoardCard(Map<String, dynamic> board, Color textColor, bool isDark) {
+  Widget _buildBoardCard(
+    Map<String, dynamic> board,
+    Color textColor,
+    bool isDark,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,16 +352,35 @@ class ProfileScreen extends StatelessWidget {
             child: Row(
               children: [
                 // Big Left Image
-                Expanded(flex: 2, child: CachedNetworkImage(imageUrl: board['mainImage'], fit: BoxFit.cover, height: double.infinity)),
+                Expanded(
+                  flex: 2,
+                  child: CachedNetworkImage(
+                    imageUrl: board['mainImage'],
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                  ),
+                ),
                 const SizedBox(width: 2), // Small divider line
                 // Stacked Right Images
                 Expanded(
                   flex: 1,
                   child: Column(
                     children: [
-                      Expanded(child: CachedNetworkImage(imageUrl: board['subImage1'], fit: BoxFit.cover, width: double.infinity)),
+                      Expanded(
+                        child: CachedNetworkImage(
+                          imageUrl: board['subImage1'],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Expanded(child: CachedNetworkImage(imageUrl: board['subImage2'], fit: BoxFit.cover, width: double.infinity)),
+                      Expanded(
+                        child: CachedNetworkImage(
+                          imageUrl: board['subImage2'],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -288,9 +395,21 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(board['title'], style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(
+                board['title'],
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               const SizedBox(height: 2),
-              Text('${board['pins']} Pins · ${board['time']}', style: TextStyle(color: Colors.grey[500], fontSize: 14)),
+              Text(
+                '${board['pins']} Pins · ${board['time']}',
+                style: TextStyle(color: Colors.grey[500], fontSize: 14),
+              ),
             ],
           ),
         ),
@@ -307,14 +426,17 @@ class ProfileScreen extends StatelessWidget {
         crossAxisCount: 2,
         mainAxisSpacing: 8,
         crossAxisSpacing: 8,
-        itemCount: _mockSavedPins.length, // Reusing diverse pin data for collage placeholders
+        itemCount: _mockSavedPins
+            .length, // Reusing diverse pin data for collage placeholders
         itemBuilder: (context, index) {
           // Wrap it to distinguish them from single pins
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(20), // More roundedcorners for collages
+                borderRadius: BorderRadius.circular(
+                  20,
+                ), // More roundedcorners for collages
                 child: CachedNetworkImage(
                   imageUrl: _mockSavedPins[index],
                   memCacheWidth: 400,
@@ -324,7 +446,14 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: Text('Collage #${index + 1}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14)),
+                child: Text(
+                  'Collage #${index + 1}',
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
               ),
               const SizedBox(height: 8),
             ],
@@ -339,10 +468,26 @@ class ProfileScreen extends StatelessWidget {
 // RICH REALISTIC MOCK DATA (Using diverse Pexels derived images)
 // =============================================================================
 final List<Map<String, String>> _mockBoardSuggestions = [
-  {'title': 'Autumn aesthetics', 'image': 'https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=400'},
-  {'title': 'Cozy coffee setups', 'image': 'https://images.pexels.com/photos/2079438/pexels-photo-2079438.jpeg?auto=compress&cs=tinysrgb&w=400'},
-  {'title': 'Techsetup inspo', 'image': 'https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=400'},
-  {'title': 'Silly cat jokes', 'image': 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=400'},
+  {
+    'title': 'Autumn aesthetics',
+    'image':
+        'https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=400',
+  },
+  {
+    'title': 'Cozy coffee setups',
+    'image':
+        'https://images.pexels.com/photos/2079438/pexels-photo-2079438.jpeg?auto=compress&cs=tinysrgb&w=400',
+  },
+  {
+    'title': 'Techsetup inspo',
+    'image':
+        'https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=400',
+  },
+  {
+    'title': 'Silly cat jokes',
+    'image':
+        'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=400',
+  },
 ];
 
 final List<String> _mockSavedPins = [
@@ -358,30 +503,46 @@ final List<String> _mockSavedPins = [
 final List<Map<String, dynamic>> _mockBoards = [
   {
     'title': 'Viral food photo ideas',
-    'pins': '77', 'time': '2w',
-    'mainImage': 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'subImage1': 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=200',
-    'subImage2': 'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'pins': '77',
+    'time': '2w',
+    'mainImage':
+        'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
+    'subImage1':
+        'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'subImage2':
+        'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&cs=tinysrgb&w=200',
   },
   {
     'title': 'Home workout reset',
-    'pins': '70', 'time': '1w',
-    'mainImage': 'https://images.pexels.com/photos/4164844/pexels-photo-4164844.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'subImage1': 'https://images.pexels.com/photos/4164845/pexels-photo-4164845.jpeg?auto=compress&cs=tinysrgb&w=200',
-    'subImage2': 'https://images.pexels.com/photos/4164843/pexels-photo-4164843.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'pins': '70',
+    'time': '1w',
+    'mainImage':
+        'https://images.pexels.com/photos/4164844/pexels-photo-4164844.jpeg?auto=compress&cs=tinysrgb&w=400',
+    'subImage1':
+        'https://images.pexels.com/photos/4164845/pexels-photo-4164845.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'subImage2':
+        'https://images.pexels.com/photos/4164843/pexels-photo-4164843.jpeg?auto=compress&cs=tinysrgb&w=200',
   },
   {
     'title': 'Dark Academia Aesthetics',
-    'pins': '156', 'time': '9mo',
-    'mainImage': 'https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'subImage1': 'https://images.pexels.com/photos/1762851/pexels-photo-1762851.jpeg?auto=compress&cs=tinysrgb&w=200',
-    'subImage2': 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'pins': '156',
+    'time': '9mo',
+    'mainImage':
+        'https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg?auto=compress&cs=tinysrgb&w=400',
+    'subImage1':
+        'https://images.pexels.com/photos/1762851/pexels-photo-1762851.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'subImage2':
+        'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=200',
   },
   {
     'title': 'Living Room Decor',
-    'pins': '124', 'time': '8mo',
-    'mainImage': 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=400',
-    'subImage1': 'https://images.pexels.com/photos/2079438/pexels-photo-2079438.jpeg?auto=compress&cs=tinysrgb&w=200',
-    'subImage2': 'https://images.pexels.com/photos/716107/pexels-photo-716107.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'pins': '124',
+    'time': '8mo',
+    'mainImage':
+        'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=400',
+    'subImage1':
+        'https://images.pexels.com/photos/2079438/pexels-photo-2079438.jpeg?auto=compress&cs=tinysrgb&w=200',
+    'subImage2':
+        'https://images.pexels.com/photos/716107/pexels-photo-716107.jpeg?auto=compress&cs=tinysrgb&w=200',
   },
 ];

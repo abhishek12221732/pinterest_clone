@@ -44,7 +44,7 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: pinterestRed,
-      scaffoldBackgroundColor: Colors.black, 
+      scaffoldBackgroundColor: Colors.black,
       textTheme: GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme),
       colorScheme: const ColorScheme.dark(
         primary: pinterestRed,

@@ -18,7 +18,7 @@ class PexelsPhoto {
       id: json['id'],
       url: json['url'],
       // We use the 'large' image size for a good balance of quality and performance
-      imageUrl: json['src']['large'], 
+      imageUrl: json['src']['large'],
       altText: json['alt'] ?? 'Pinterest Pin',
       photographer: json['photographer'] ?? 'Unknown',
     );

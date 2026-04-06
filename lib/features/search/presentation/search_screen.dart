@@ -41,7 +41,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final searchState = ref.watch(searchProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = Theme.of(context).colorScheme.secondary;
-    final searchBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200]; 
+    final searchBarColor = isDark ? const Color(0xFF1E1E1E) : Colors.grey[200];
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -59,36 +59,60 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       decoration: BoxDecoration(
                         color: searchBarColor,
                         borderRadius: BorderRadius.circular(25),
-                        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.transparent, width: 1),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.grey[800]!
+                              : Colors.transparent,
+                          width: 1,
+                        ),
                       ),
                       child: TextField(
                         controller: _searchController,
-                        onChanged: (value) => ref.read(searchProvider.notifier).search(value),
+                        onChanged: (value) =>
+                            ref.read(searchProvider.notifier).search(value),
                         style: TextStyle(color: textColor, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Search for ideas',
-                          hintStyle: TextStyle(color: Colors.grey[500], fontSize: 16, fontWeight: FontWeight.w500),
-                          prefixIcon: Icon(Icons.search_rounded, color: textColor),
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search_rounded,
+                            color: textColor,
+                          ),
                           suffixIcon: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               if (_isSearching)
                                 IconButton(
-                                  icon: const Icon(Icons.cancel, color: Colors.grey, size: 20),
+                                  icon: const Icon(
+                                    Icons.cancel,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
                                   onPressed: () {
                                     _searchController.clear();
-                                    ref.read(searchProvider.notifier).search('');
+                                    ref
+                                        .read(searchProvider.notifier)
+                                        .search('');
                                     FocusScope.of(context).unfocus();
                                   },
                                 ),
                               IconButton(
-                                icon: Icon(Icons.camera_alt_outlined, color: textColor),
+                                icon: Icon(
+                                  Icons.camera_alt_outlined,
+                                  color: textColor,
+                                ),
                                 onPressed: () => HapticFeedback.lightImpact(),
                               ),
                             ],
                           ),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                          ),
                         ),
                       ),
                     ),
@@ -102,7 +126,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           ref.read(searchProvider.notifier).search('');
                           FocusScope.of(context).unfocus();
                         },
-                        child: Text('Cancel', style: TextStyle(color: textColor, fontWeight: FontWeight.w600, fontSize: 16)),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: textColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
                 ],
@@ -111,20 +142,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
             // 2. Dynamic Content Area
             Expanded(
-              child: _isSearching 
-                  ? _buildSearchResults(searchState, textColor) 
+              child: _isSearching
+                  ? _buildSearchResults(searchState, textColor)
                   : _buildExploreState(textColor, isDark),
             ),
           ],
         ),
       ),
-      floatingActionButton: !_isSearching ? FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: isDark ? const Color(0xFF333333) : Colors.white,
-        foregroundColor: textColor,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.search_rounded, size: 28),
-      ) : null,
+      floatingActionButton: !_isSearching
+          ? FloatingActionButton(
+              onPressed: () {},
+              backgroundColor: isDark ? const Color(0xFF333333) : Colors.white,
+              foregroundColor: textColor,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.search_rounded, size: 28),
+            )
+          : null,
     );
   }
 
@@ -152,14 +185,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         image: DecorationImage(
                           image: NetworkImage(item['image']!),
                           fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+                          colorFilter: ColorFilter.mode(
+                            Colors.black.withOpacity(0.3),
+                            BlendMode.darken,
+                          ),
                         ),
                       ),
-                      alignment: Alignment.centerLeft, 
+                      alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
                         item['title']!,
-                        style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, height: 1.2),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          height: 1.2,
+                        ),
                       ),
                     );
                   },
@@ -168,20 +209,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(6, (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 8, height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: index == 0 ? Colors.white : Colors.white54,
+                    children: List.generate(
+                      6,
+                      (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: index == 0 ? Colors.white : Colors.white54,
+                        ),
                       ),
-                    )),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
 
           Padding(
@@ -189,14 +234,28 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Explore featured boards', style: TextStyle(color: Colors.grey[400], fontSize: 14, fontWeight: FontWeight.w500)),
+                Text(
+                  'Explore featured boards',
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Bring your inspiration to life', style: TextStyle(color: textColor, fontSize: 24, fontWeight: FontWeight.bold)),
+                Text(
+                  'Bring your inspiration to life',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          
+
           SizedBox(
             height: 280,
             child: ListView.builder(
@@ -204,7 +263,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               itemCount: _mockBoards.length,
               itemBuilder: (context, index) {
-                return _buildCollageBoardCard(_mockBoards[index], textColor, isDark);
+                return _buildCollageBoardCard(
+                  _mockBoards[index],
+                  textColor,
+                  isDark,
+                );
               },
             ),
           ),
@@ -216,7 +279,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Ideas for you', style: TextStyle(color: Colors.grey[400], fontSize: 14, fontWeight: FontWeight.w500)),
+                Text(
+                  'Ideas for you',
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 4),
               ],
             ),
@@ -228,7 +298,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildCollageBoardCard(Map<String, dynamic> board, Color textColor, bool isDark) {
+  Widget _buildCollageBoardCard(
+    Map<String, dynamic> board,
+    Color textColor,
+    bool isDark,
+  ) {
     return Container(
       width: 280,
       margin: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -246,16 +320,32 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: CachedNetworkImage(imageUrl: board['mainImage'], fit: BoxFit.cover, height: double.infinity),
+                  child: CachedNetworkImage(
+                    imageUrl: board['mainImage'],
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                  ),
                 ),
-                const SizedBox(width: 2), 
+                const SizedBox(width: 2),
                 Expanded(
                   flex: 1,
                   child: Column(
                     children: [
-                      Expanded(child: CachedNetworkImage(imageUrl: board['subImage1'], fit: BoxFit.cover, width: double.infinity)),
+                      Expanded(
+                        child: CachedNetworkImage(
+                          imageUrl: board['subImage1'],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Expanded(child: CachedNetworkImage(imageUrl: board['subImage2'], fit: BoxFit.cover, width: double.infinity)),
+                      Expanded(
+                        child: CachedNetworkImage(
+                          imageUrl: board['subImage2'],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -263,20 +353,38 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          Text(board['title'], style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(
+            board['title'],
+            style: TextStyle(
+              color: textColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
-              Text(board['author'], style: TextStyle(color: textColor, fontSize: 14)),
+              Text(
+                board['author'],
+                style: TextStyle(color: textColor, fontSize: 14),
+              ),
               const SizedBox(width: 4),
-              if (board['verified'] == true) 
+              if (board['verified'] == true)
                 const Icon(Icons.check_circle, color: Colors.red, size: 14),
               if (board['collaborators'] != null)
-                Text(' + ${board['collaborators']}', style: TextStyle(color: textColor, fontSize: 14)),
+                Text(
+                  ' + ${board['collaborators']}',
+                  style: TextStyle(color: textColor, fontSize: 14),
+                ),
             ],
           ),
           const SizedBox(height: 2),
-          Text('${board['pins']} Pins · ${board['time']}', style: TextStyle(color: Colors.grey[500], fontSize: 14)),
+          Text(
+            '${board['pins']} Pins · ${board['time']}',
+            style: TextStyle(color: Colors.grey[500], fontSize: 14),
+          ),
         ],
       ),
     );
@@ -288,7 +396,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget _buildSearchResults(AsyncValue searchState, Color iconColor) {
     return searchState.when(
       data: (photos) {
-        if (photos.isEmpty) return const Center(child: Text('No results found.'));
+        if (photos.isEmpty)
+          return const Center(child: Text('No results found.'));
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: MasonryGridView.count(
@@ -301,15 +410,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: CachedNetworkImage(
-                  imageUrl: photo.imageUrl, 
-                  memCacheWidth: 400, 
+                  imageUrl: photo.imageUrl,
+                  memCacheWidth: 400,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => buildSmoothShimmer(context),
                   fadeInDuration: const Duration(milliseconds: 400),
                   fadeInCurve: Curves.easeOutCubic,
                   errorWidget: (context, url, error) => Container(
                     height: 250,
-                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Colors.grey[200],
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[900]
+                        : Colors.grey[200],
                     child: const Icon(Icons.broken_image, color: Colors.grey),
                   ),
                 ),
@@ -325,13 +436,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildInitialGrid(BuildContext context, Color iconColor) {
     // FIX: Pass the required string argument to the family provider
-    final initialFeedState = ref.watch(homeFeedProvider('All')); 
+    final initialFeedState = ref.watch(homeFeedProvider('All'));
     return initialFeedState.when(
       data: (photos) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: MasonryGridView.count(
-          shrinkWrap: true, 
-          physics: const NeverScrollableScrollPhysics(), 
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
@@ -341,15 +452,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             return ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: CachedNetworkImage(
-                imageUrl: photo.imageUrl, 
-                memCacheWidth: 400, 
+                imageUrl: photo.imageUrl,
+                memCacheWidth: 400,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => buildSmoothShimmer(context),
                 fadeInDuration: const Duration(milliseconds: 400),
                 fadeInCurve: Curves.easeOutCubic,
                 errorWidget: (context, url, error) => Container(
                   height: 250,
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Colors.grey[200],
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[900]
+                      : Colors.grey[200],
                   child: const Icon(Icons.broken_image, color: Colors.grey),
                 ),
               ),
@@ -366,8 +479,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   // MOCK DATA
   // ===========================================================================
   final List<Map<String, String>> _mockIdeas = [
-    {'title': 'Start a nature journal', 'image': 'https://images.pexels.com/photos/4096964/pexels-photo-4096964.jpeg?auto=compress&cs=tinysrgb&w=800'},
-    {'title': 'Autumn aesthetics', 'image': 'https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=800'},
+    {
+      'title': 'Start a nature journal',
+      'image':
+          'https://images.pexels.com/photos/4096964/pexels-photo-4096964.jpeg?auto=compress&cs=tinysrgb&w=800',
+    },
+    {
+      'title': 'Autumn aesthetics',
+      'image':
+          'https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=800',
+    },
   ];
 
   final List<Map<String, dynamic>> _mockBoards = [
@@ -377,9 +498,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       'verified': true,
       'pins': '77',
       'time': '2w',
-      'mainImage': 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
-      'subImage1': 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=200',
-      'subImage2': 'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&cs=tinysrgb&w=200',
+      'mainImage':
+          'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
+      'subImage1':
+          'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=200',
+      'subImage2':
+          'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&cs=tinysrgb&w=200',
     },
     {
       'title': 'Home workout reset',
@@ -388,9 +512,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       'collaborators': '1',
       'pins': '70',
       'time': '1w',
-      'mainImage': 'https://images.pexels.com/photos/4164844/pexels-photo-4164844.jpeg?auto=compress&cs=tinysrgb&w=400',
-      'subImage1': 'https://images.pexels.com/photos/4164845/pexels-photo-4164845.jpeg?auto=compress&cs=tinysrgb&w=200',
-      'subImage2': 'https://images.pexels.com/photos/4164843/pexels-photo-4164843.jpeg?auto=compress&cs=tinysrgb&w=200',
+      'mainImage':
+          'https://images.pexels.com/photos/4164844/pexels-photo-4164844.jpeg?auto=compress&cs=tinysrgb&w=400',
+      'subImage1':
+          'https://images.pexels.com/photos/4164845/pexels-photo-4164845.jpeg?auto=compress&cs=tinysrgb&w=200',
+      'subImage2':
+          'https://images.pexels.com/photos/4164843/pexels-photo-4164843.jpeg?auto=compress&cs=tinysrgb&w=200',
     },
   ];
 }
@@ -406,7 +533,7 @@ Widget buildSmoothShimmer(BuildContext context) {
     baseColor: baseColor,
     highlightColor: highlightColor,
     child: Container(
-      height: 250, 
+      height: 250,
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(16),

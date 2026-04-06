@@ -8,7 +8,8 @@ class PinterestLoader extends StatefulWidget {
   State<PinterestLoader> createState() => _PinterestLoaderState();
 }
 
-class _PinterestLoaderState extends State<PinterestLoader> with SingleTickerProviderStateMixin {
+class _PinterestLoaderState extends State<PinterestLoader>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -41,9 +42,9 @@ class _PinterestLoaderState extends State<PinterestLoader> with SingleTickerProv
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  _buildDot(const Color(0xFFE60023), 0),                   // Pinterest Red
-                  _buildDot(Colors.grey[400]!, 2 * math.pi / 3),           // Light Grey
-                  _buildDot(Colors.grey[800]!, 4 * math.pi / 3),           // Dark Grey
+                  _buildDot(const Color(0xFFE60023), 0), // Pinterest Red
+                  _buildDot(Colors.grey[400]!, 2 * math.pi / 3), // Light Grey
+                  _buildDot(Colors.grey[800]!, 4 * math.pi / 3), // Dark Grey
                 ],
               ),
             ),

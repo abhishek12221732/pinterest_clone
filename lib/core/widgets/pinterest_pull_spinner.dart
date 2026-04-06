@@ -12,17 +12,22 @@ class PinterestFourDotSpinner extends StatefulWidget {
   });
 
   @override
-  State<PinterestFourDotSpinner> createState() => _PinterestFourDotSpinnerState();
+  State<PinterestFourDotSpinner> createState() =>
+      _PinterestFourDotSpinnerState();
 }
 
-class _PinterestFourDotSpinnerState extends State<PinterestFourDotSpinner> with SingleTickerProviderStateMixin {
+class _PinterestFourDotSpinnerState extends State<PinterestFourDotSpinner>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     // 1-second rotation cycle
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
   }
 
   @override
@@ -31,7 +36,7 @@ class _PinterestFourDotSpinnerState extends State<PinterestFourDotSpinner> with 
     // If we trigger the refresh, start spinning infinitely
     if (widget.isRefreshing && !_controller.isAnimating) {
       _controller.repeat();
-    } 
+    }
     // If the refresh finishes, stop spinning
     else if (!widget.isRefreshing && _controller.isAnimating) {
       _controller.stop();
@@ -70,7 +75,12 @@ class _PinterestFourDotSpinnerState extends State<PinterestFourDotSpinner> with 
               color: bgColor,
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 8, spreadRadius: 1, offset: const Offset(0, 2))
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
+                ),
               ],
             ),
             child: Center(
@@ -91,20 +101,23 @@ class _PinterestFourDotSpinnerState extends State<PinterestFourDotSpinner> with 
             ),
           ),
         );
-      }
+      },
     );
   }
 
   // Helper to build the individual dots
   Widget _buildDot(Color color) {
-    // If refreshing, keep them at full size. 
+    // If refreshing, keep them at full size.
     // If pulling, scale them up from 0 to full size based on pull percentage.
     final scale = widget.isRefreshing ? 1.0 : widget.percentage;
-    
+
     return Transform.scale(
-      scale: scale < 0.2 ? 0.0 : scale, // They "pop" in nicely after a slight pull
+      scale: scale < 0.2
+          ? 0.0
+          : scale, // They "pop" in nicely after a slight pull
       child: Container(
-        width: 8, height: 8,
+        width: 8,
+        height: 8,
         decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
     );

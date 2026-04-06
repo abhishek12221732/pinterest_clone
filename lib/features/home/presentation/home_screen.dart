@@ -18,7 +18,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textColor = Theme.of(context).colorScheme.secondary;
-    
+
     // Define the exact query strings for each tab
     final categories = ['All', 'UI Design', 'Architecture', 'Motivation'];
 
@@ -36,8 +36,14 @@ class HomeScreen extends ConsumerWidget {
             indicatorSize: TabBarIndicatorSize.label,
             labelColor: textColor,
             unselectedLabelColor: Colors.grey,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
             tabs: const [
               Tab(text: 'All'),
               Tab(text: 'UI Design'),
@@ -54,7 +60,12 @@ class HomeScreen extends ConsumerWidget {
             _buildTabContent(context, ref, categories[1], textColor),
             _buildTabContent(context, ref, categories[2], textColor),
             _buildTabContent(context, ref, categories[3], textColor),
-            const Center(child: Text('Customize your home feed', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+            const Center(
+              child: Text(
+                'Customize your home feed',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
           ],
         ),
       ),
@@ -62,48 +73,68 @@ class HomeScreen extends ConsumerWidget {
   }
 
   // A helper method to build the content for a specific tab
-  Widget _buildTabContent(BuildContext context, WidgetRef ref, String category, Color iconColor) {
+  Widget _buildTabContent(
+    BuildContext context,
+    WidgetRef ref,
+    String category,
+    Color iconColor,
+  ) {
     final feedState = ref.watch(homeFeedProvider(category));
 
     return feedState.when(
       data: (photos) => CustomScrollView(
         // AlwaysScrollable is required so you can pull down even if the grid isn't full
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: [
           // THE MAGIC: A fully customizable refresh sliver
           CupertinoSliverRefreshControl(
             // Require a slightly longer, more deliberate pull before triggering
-            refreshTriggerPullDistance: 120.0, 
+            refreshTriggerPullDistance: 120.0,
             onRefresh: () async {
               HapticFeedback.mediumImpact();
-              
+
               // 1. Start the network request
-              final refreshTask = ref.refresh(homeFeedProvider(category).future);
-              
-              // 2. Enforce a minimum 1.2-second delay so the spinner animation 
+              final refreshTask = ref.refresh(
+                homeFeedProvider(category).future,
+              );
+
+              // 2. Enforce a minimum 1.2-second delay so the spinner animation
               // always has time to look smooth and deliberate, even on fast Wi-Fi.
-              final minimumDelay = Future.delayed(const Duration(milliseconds: 1200));
-              
+              final minimumDelay = Future.delayed(
+                const Duration(milliseconds: 1200),
+              );
+
               // 3. Wait for BOTH to finish before dismissing the spinner
               await Future.wait([refreshTask, minimumDelay]);
             },
-            builder: (context, refreshState, pulledExtent, refreshTriggerPullDistance, refreshIndicatorExtent) {
-              final percentage = (pulledExtent / refreshTriggerPullDistance).clamp(0.0, 1.0);
-              final isActivelyRefreshing = refreshState == RefreshIndicatorMode.refresh || 
-                                           refreshState == RefreshIndicatorMode.armed;
+            builder:
+                (
+                  context,
+                  refreshState,
+                  pulledExtent,
+                  refreshTriggerPullDistance,
+                  refreshIndicatorExtent,
+                ) {
+                  final percentage = (pulledExtent / refreshTriggerPullDistance)
+                      .clamp(0.0, 1.0);
+                  final isActivelyRefreshing =
+                      refreshState == RefreshIndicatorMode.refresh ||
+                      refreshState == RefreshIndicatorMode.armed;
 
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: PinterestFourDotSpinner(
-                    percentage: percentage,
-                    isRefreshing: isActivelyRefreshing,
-                  ),
-                ),
-              );
-            },
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: PinterestFourDotSpinner(
+                        percentage: percentage,
+                        isRefreshing: isActivelyRefreshing,
+                      ),
+                    ),
+                  );
+                },
           ),
-          
+
           // The main Masonry Grid, converted to a Sliver
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -119,7 +150,8 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      loading: () => const PinterestLoader(), // The 3-dot center loader for initial load
+      loading: () =>
+          const PinterestLoader(), // The 3-dot center loader for initial load
       error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
@@ -139,7 +171,8 @@ class HomeScreen extends ConsumerWidget {
           },
         ),
       ),
-      loading: () => const Center(child: CircularProgressIndicator(color: Colors.red)),
+      loading: () =>
+          const Center(child: CircularProgressIndicator(color: Colors.red)),
       error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
@@ -204,7 +237,7 @@ class _PinGridItemState extends State<PinGridItem> {
 
   void _onLongPressMoveUpdate(LongPressMoveUpdateDetails details) {
     _dragPosition.value = details.globalPosition;
-    
+
     // Provide a subtle haptic "tick" when the finger crosses into an icon's hover zone
     int? currentIndex = _getHoveredIndex(details.globalPosition);
     if (currentIndex != _lastHoveredIndex) {
@@ -217,9 +250,11 @@ class _PinGridItemState extends State<PinGridItem> {
     // Determine what the user was hovering over when they lifted their finger
     int? finalSelection = _getHoveredIndex(details.globalPosition);
     if (finalSelection != null) {
-      // THE ACTION HAPPENS HERE! 
+      // THE ACTION HAPPENS HERE!
       final selectedAction = _radialItems[finalSelection].label;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$selectedAction Clicked!')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('$selectedAction Clicked!')));
     }
 
     _removeOverlay();
@@ -239,13 +274,20 @@ class _PinGridItemState extends State<PinGridItem> {
         GestureDetector(
           onTap: () {
             HapticFeedback.selectionClick();
-            context.push('/pin', extra: {'photo': widget.photo, 'heroTag': 'home_pin_${widget.photo.id}'});
+            context.push(
+              '/pin',
+              extra: {
+                'photo': widget.photo,
+                'heroTag': 'home_pin_${widget.photo.id}',
+              },
+            );
           },
           onLongPressStart: _onLongPressStart,
           onLongPressMoveUpdate: _onLongPressMoveUpdate,
           onLongPressEnd: _onLongPressEnd,
-          onLongPressCancel: _removeOverlay, // Safety catch if gesture is interrupted
-          
+          onLongPressCancel:
+              _removeOverlay, // Safety catch if gesture is interrupted
+
           child: Hero(
             tag: 'home_pin_${widget.photo.id}',
             child: ClipRRect(
@@ -261,7 +303,9 @@ class _PinGridItemState extends State<PinGridItem> {
                 fadeInCurve: Curves.easeOutCubic,
                 errorWidget: (context, url, error) => Container(
                   height: 250,
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Colors.grey[200],
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[900]
+                      : Colors.grey[200],
                   child: const Icon(Icons.broken_image, color: Colors.grey),
                 ),
               ),
@@ -275,8 +319,17 @@ class _PinGridItemState extends State<PinGridItem> {
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.only(top: 4.0, bottom: 8.0, left: 8.0, right: 4.0),
-            child: Icon(Icons.more_horiz_rounded, size: 20, color: widget.iconColor),
+            padding: const EdgeInsets.only(
+              top: 4.0,
+              bottom: 8.0,
+              left: 8.0,
+              right: 4.0,
+            ),
+            child: Icon(
+              Icons.more_horiz_rounded,
+              size: 20,
+              color: widget.iconColor,
+            ),
           ),
         ),
       ],
@@ -286,7 +339,9 @@ class _PinGridItemState extends State<PinGridItem> {
   // Breakout Bottom Sheet Logic
   void _showPinOptionsSheet(BuildContext context, PexelsPhoto photo) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final sheetColor = isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF5F5F5);
+    final sheetColor = isDark
+        ? const Color(0xFF2B2B2B)
+        : const Color(0xFFF5F5F5);
     final textColor = isDark ? Colors.white : Colors.black;
 
     showModalBottomSheet(
@@ -304,29 +359,91 @@ class _PinGridItemState extends State<PinGridItem> {
                   width: double.infinity,
                   margin: const EdgeInsets.only(top: 120),
                   padding: const EdgeInsets.only(top: 150, bottom: 24),
-                  decoration: BoxDecoration(color: sheetColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(32))),
+                  decoration: BoxDecoration(
+                    color: sheetColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(32),
+                    ),
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('This Pin is inspired by your recent activity', style: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w500)),
+                      Text(
+                        'This Pin is inspired by your recent activity',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                       const SizedBox(height: 24),
-                      _buildActionTile(Icons.push_pin_outlined, 'Save', textColor),
-                      _buildActionTile(Icons.share_outlined, 'Share', textColor),
-                      _buildActionTile(Icons.download_outlined, 'Download image', textColor),
-                      _buildActionTile(Icons.favorite_border_rounded, 'See more like this', textColor),
-                      _buildActionTile(Icons.visibility_off_outlined, 'See less like this', textColor),
-                      _buildActionTile(Icons.block, 'Report Pin', textColor, subtitle: "This goes against Pinterest's community guidelines"),
+                      _buildActionTile(
+                        Icons.push_pin_outlined,
+                        'Save',
+                        textColor,
+                      ),
+                      _buildActionTile(
+                        Icons.share_outlined,
+                        'Share',
+                        textColor,
+                      ),
+                      _buildActionTile(
+                        Icons.download_outlined,
+                        'Download image',
+                        textColor,
+                      ),
+                      _buildActionTile(
+                        Icons.favorite_border_rounded,
+                        'See more like this',
+                        textColor,
+                      ),
+                      _buildActionTile(
+                        Icons.visibility_off_outlined,
+                        'See less like this',
+                        textColor,
+                      ),
+                      _buildActionTile(
+                        Icons.block,
+                        'Report Pin',
+                        textColor,
+                        subtitle:
+                            "This goes against Pinterest's community guidelines",
+                      ),
                     ],
                   ),
                 ),
                 Positioned(
                   top: 20,
                   child: Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 15, spreadRadius: 2)]),
-                    child: ClipRRect(borderRadius: BorderRadius.circular(20), child: CachedNetworkImage(imageUrl: photo.imageUrl, width: 140, height: 230, fit: BoxFit.cover)),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: CachedNetworkImage(
+                        imageUrl: photo.imageUrl,
+                        width: 140,
+                        height: 230,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
-                Positioned(top: 136, left: 16, child: IconButton(icon: Icon(Icons.close_rounded, color: textColor, size: 30), onPressed: () => Navigator.pop(context))),
+                Positioned(
+                  top: 136,
+                  left: 16,
+                  child: IconButton(
+                    icon: Icon(Icons.close_rounded, color: textColor, size: 30),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
               ],
             ),
           ],
@@ -335,11 +452,28 @@ class _PinGridItemState extends State<PinGridItem> {
     );
   }
 
-  Widget _buildActionTile(IconData icon, String title, Color color, {String? subtitle}) {
+  Widget _buildActionTile(
+    IconData icon,
+    String title,
+    Color color, {
+    String? subtitle,
+  }) {
     return ListTile(
       leading: Icon(icon, color: color, size: 28),
-      title: Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 19)),
-      subtitle: subtitle != null ? Text(subtitle, style: TextStyle(color: color.withOpacity(0.8), fontSize: 14)) : null,
+      title: Text(
+        title,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 19,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle,
+              style: TextStyle(color: color.withOpacity(0.8), fontSize: 14),
+            )
+          : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
       visualDensity: VisualDensity.compact,
       onTap: () {},
@@ -384,8 +518,10 @@ class RadialMenuOverlay extends StatelessWidget {
                 children: [
                   // 1. The Hollow Ring marking the original tap location
                   Positioned(
-                    left: initialPosition.dx - 35, // Centered on tap X (70/2 = 35)
-                    top: initialPosition.dy - 35,  // Centered on tap Y
+                    left:
+                        initialPosition.dx -
+                        35, // Centered on tap X (70/2 = 35)
+                    top: initialPosition.dy - 35, // Centered on tap Y
                     child: Container(
                       width: 70,
                       height: 70,
@@ -413,7 +549,9 @@ class RadialMenuOverlay extends StatelessWidget {
                           width: 56,
                           height: 56,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF333333), // Exact Pinterest dark grey
+                            color: const Color(
+                              0xFF333333,
+                            ), // Exact Pinterest dark grey
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
@@ -452,7 +590,7 @@ Widget buildSmoothShimmer(BuildContext context) {
     child: Container(
       // Removing the hardcoded 200 height and using a default generic height
       // combined with a smooth radius prevents the ugly box flash
-      height: 250, 
+      height: 250,
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(16),

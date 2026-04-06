@@ -14,7 +14,7 @@ class SearchNotifier extends AsyncNotifier<List<PexelsPhoto>> {
   void search(String query) {
     // Cancel the previous timer if the user is still typing
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    
+
     if (query.isEmpty) {
       state = const AsyncValue.data([]);
       return;
@@ -23,11 +23,13 @@ class SearchNotifier extends AsyncNotifier<List<PexelsPhoto>> {
     // Wait 500ms after typing stops before calling the API
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       state = const AsyncValue.loading();
-      
+
       state = await AsyncValue.guard(() async {
         final dioClient = ref.read(dioProvider);
-        final response = await dioClient.dio.get('search?query=$query&per_page=30');
-        
+        final response = await dioClient.dio.get(
+          'search?query=$query&per_page=30',
+        );
+
         final List<dynamic> photosJson = response.data['photos'];
         return photosJson.map((json) => PexelsPhoto.fromJson(json)).toList();
       });
@@ -35,6 +37,8 @@ class SearchNotifier extends AsyncNotifier<List<PexelsPhoto>> {
   }
 }
 
-final searchProvider = AsyncNotifierProvider<SearchNotifier, List<PexelsPhoto>>(() {
-  return SearchNotifier();
-});
+final searchProvider = AsyncNotifierProvider<SearchNotifier, List<PexelsPhoto>>(
+  () {
+    return SearchNotifier();
+  },
+);
