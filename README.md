@@ -6,7 +6,9 @@ A high-fidelity, performance-optimized Flutter clone of the Pinterest mobile app
 [![Riverpod](https://img.shields.io/badge/Riverpod-State%20Management-blue?style=for-the-badge)](https://riverpod.dev/)
 [![GoRouter](https://img.shields.io/badge/GoRouter-Routing-lightgrey?style=for-the-badge)]()
 
-**🎥 [View the 60-Second Video Walkthrough Here]** *(Insert your YouTube/Drive link here)*
+**🎥 [View the 5-Minute Video Walkthrough](https://drive.google.com/file/d/1UvOydXpLvQrZiY455rcM44odLB8Lf7ZF/view?usp=sharing)**
+
+**📦 [Download APK](https://drive.google.com/file/d/1wnh8ibwN2qgZ8Qz50pKWobE-uDWQqt_O/view?usp=sharing)**
 
 ---
 
@@ -46,13 +48,6 @@ Given the strict 5-day timeline for this sprint, I made specific prioritization 
 <img src="assets/screenshot1.jpg" alt="Screenshot 1" width="260" />
 <img src="assets/screenshot2.jpg" alt="Screenshot 2" width="260" />
 <img src="assets/screenshot3.jpg" alt="Screenshot 3" width="260" />
-
-
-### APK Download
-You can also download the ready-to-install APK here:
-
-[Download Pinterest Clone APK](https://drive.google.com/file/d/1wnh8ibwN2qgZ8Qz50pKWobE-uDWQqt_O/view?usp=sharing)
-
 
 ### Prerequisites
 * Flutter SDK (Stable channel)
