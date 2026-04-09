@@ -47,16 +47,14 @@ class PinDetailScreen extends StatelessWidget {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(24),
                               child: CachedNetworkImage(
-                                imageUrl: photo.imageUrl,
+                                imageUrl: photo.largeImageUrl,
                                 fit: BoxFit.contain,
-                                // THE FIX: Use the instantly available RAM-cached
-                                // grid image as the placeholder for the Hero animation
+                                // Use the instantly available RAM-cached
+                                // grid image (medium) as the placeholder for the Hero animation
                                 placeholder: (context, url) =>
                                     CachedNetworkImage(
                                       imageUrl: photo.imageUrl,
                                       fit: BoxFit.contain,
-                                      memCacheWidth:
-                                          400, // Hits the RAM cache instantly
                                     ),
                                 // Added a subtle error state just in case
                                 errorWidget: (context, url, error) => Container(

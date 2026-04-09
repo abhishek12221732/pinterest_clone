@@ -19,7 +19,6 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final textColor = Theme.of(context).colorScheme.secondary;
 
-    // Define the exact query strings for each tab
     final categories = ['All', 'UI Design', 'Architecture', 'Motivation'];
 
     return DefaultTabController(
@@ -55,7 +54,6 @@ class HomeScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            // We pass the specific category to each tab view!
             _buildTabContent(context, ref, categories[0], textColor),
             _buildTabContent(context, ref, categories[1], textColor),
             _buildTabContent(context, ref, categories[2], textColor),
@@ -72,7 +70,6 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  // A helper method to build the content for a specific tab
   Widget _buildTabContent(
     BuildContext context,
     WidgetRef ref,
@@ -83,30 +80,22 @@ class HomeScreen extends ConsumerWidget {
 
     return feedState.when(
       data: (photos) => CustomScrollView(
-        // AlwaysScrollable is required so you can pull down even if the grid isn't full
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),
+        cacheExtent: 500,
         slivers: [
-          // THE MAGIC: A fully customizable refresh sliver
           CupertinoSliverRefreshControl(
-            // Require a slightly longer, more deliberate pull before triggering
             refreshTriggerPullDistance: 120.0,
             onRefresh: () async {
               HapticFeedback.mediumImpact();
 
-              // 1. Start the network request
               final refreshTask = ref.refresh(
                 homeFeedProvider(category).future,
               );
-
-              // 2. Enforce a minimum 1.2-second delay so the spinner animation
-              // always has time to look smooth and deliberate, even on fast Wi-Fi.
               final minimumDelay = Future.delayed(
                 const Duration(milliseconds: 1200),
               );
-
-              // 3. Wait for BOTH to finish before dismissing the spinner
               await Future.wait([refreshTask, minimumDelay]);
             },
             builder:
@@ -135,7 +124,6 @@ class HomeScreen extends ConsumerWidget {
                 },
           ),
 
-          // The main Masonry Grid, converted to a Sliver
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             sliver: SliverMasonryGrid.count(
@@ -144,43 +132,24 @@ class HomeScreen extends ConsumerWidget {
               crossAxisSpacing: 8,
               childCount: photos.length,
               itemBuilder: (context, index) {
-                return PinGridItem(photo: photos[index], iconColor: iconColor);
+                return RepaintBoundary(
+                  child: PinGridItem(
+                    photo: photos[index],
+                    iconColor: iconColor,
+                  ),
+                );
               },
             ),
           ),
         ],
       ),
-      loading: () =>
-          const PinterestLoader(), // The 3-dot center loader for initial load
-      error: (err, stack) => Center(child: Text('Error: $err')),
-    );
-  }
-
-  Widget _buildMasonryGrid(AsyncValue feedState, Color iconColor) {
-    return feedState.when(
-      data: (photos) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: MasonryGridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          itemCount: photos.length,
-          itemBuilder: (context, index) {
-            // We use a dedicated Stateful Widget for each image to handle the complex gesture math
-            return PinGridItem(photo: photos[index], iconColor: iconColor);
-          },
-        ),
-      ),
-      loading: () =>
-          const Center(child: CircularProgressIndicator(color: Colors.red)),
+      loading: () => const PinterestLoader(),
       error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
 }
 
-// ===========================================================================
-// Stateful Pin Grid Item (Handles the Drag-and-Release Overlay Logic)
-// ===========================================================================
+// ==========================================================================
 class PinGridItem extends StatefulWidget {
   final PexelsPhoto photo;
   final Color iconColor;
@@ -197,7 +166,6 @@ class _PinGridItemState extends State<PinGridItem> {
   Offset _initialPosition = Offset.zero;
   int? _lastHoveredIndex;
 
-  // The exact relative positions of the circular icons from the user's thumb
   final List<RadialItem> _radialItems = [
     RadialItem(Icons.share_rounded, const Offset(-60, -80), 'Share'),
     RadialItem(Icons.manage_search_rounded, const Offset(40, -90), 'Search'),
@@ -205,11 +173,9 @@ class _PinGridItemState extends State<PinGridItem> {
     RadialItem(Icons.push_pin_rounded, const Offset(-70, 40), 'Pin'),
   ];
 
-  // Logic to determine which icon the finger is currently dragging over
   int? _getHoveredIndex(Offset currentDrag) {
     for (int i = 0; i < _radialItems.length; i++) {
       final itemCenter = _initialPosition + _radialItems[i].offset;
-      // If the thumb is within 40 pixels of an icon's center, consider it hovered
       if ((currentDrag - itemCenter).distance < 40) {
         return i;
       }
@@ -218,7 +184,7 @@ class _PinGridItemState extends State<PinGridItem> {
   }
 
   void _onLongPressStart(LongPressStartDetails details) {
-    HapticFeedback.heavyImpact(); // Strong vibration on initial hold
+    HapticFeedback.heavyImpact();
     _initialPosition = details.globalPosition;
     _dragPosition.value = _initialPosition;
     _lastHoveredIndex = null;
@@ -238,7 +204,6 @@ class _PinGridItemState extends State<PinGridItem> {
   void _onLongPressMoveUpdate(LongPressMoveUpdateDetails details) {
     _dragPosition.value = details.globalPosition;
 
-    // Provide a subtle haptic "tick" when the finger crosses into an icon's hover zone
     int? currentIndex = _getHoveredIndex(details.globalPosition);
     if (currentIndex != _lastHoveredIndex) {
       if (currentIndex != null) HapticFeedback.selectionClick();
@@ -247,10 +212,8 @@ class _PinGridItemState extends State<PinGridItem> {
   }
 
   void _onLongPressEnd(LongPressEndDetails details) {
-    // Determine what the user was hovering over when they lifted their finger
     int? finalSelection = _getHoveredIndex(details.globalPosition);
     if (finalSelection != null) {
-      // THE ACTION HAPPENS HERE!
       final selectedAction = _radialItems[finalSelection].label;
       ScaffoldMessenger.of(
         context,
@@ -267,6 +230,8 @@ class _PinGridItemState extends State<PinGridItem> {
 
   @override
   Widget build(BuildContext context) {
+    final photo = widget.photo;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -277,36 +242,37 @@ class _PinGridItemState extends State<PinGridItem> {
             context.push(
               '/pin',
               extra: {
-                'photo': widget.photo,
-                'heroTag': 'home_pin_${widget.photo.id}',
+                'photo': photo,
+                'heroTag': 'home_pin_${photo.id}',
               },
             );
           },
           onLongPressStart: _onLongPressStart,
           onLongPressMoveUpdate: _onLongPressMoveUpdate,
           onLongPressEnd: _onLongPressEnd,
-          onLongPressCancel:
-              _removeOverlay, // Safety catch if gesture is interrupted
+          onLongPressCancel: _removeOverlay,
 
           child: Hero(
-            tag: 'home_pin_${widget.photo.id}',
+            tag: 'home_pin_${photo.id}',
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: CachedNetworkImage(
-                imageUrl: widget.photo.imageUrl,
-                memCacheWidth: 400,
-                fit: BoxFit.cover,
-                // 1. Smooth, theme-aware shimmer
-                placeholder: (context, url) => buildSmoothShimmer(context),
-                // 2. Extend the fade-in slightly and use a smooth curve to mask the layout jump
-                fadeInDuration: const Duration(milliseconds: 400),
-                fadeInCurve: Curves.easeOutCubic,
-                errorWidget: (context, url, error) => Container(
-                  height: 250,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[900]
-                      : Colors.grey[200],
-                  child: const Icon(Icons.broken_image, color: Colors.grey),
+              child: AspectRatio(
+                aspectRatio: photo.aspectRatio,
+                child: CachedNetworkImage(
+                  imageUrl: photo.imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => _buildTintedShimmer(context, photo.avgColor),
+                  fadeOutDuration: Duration.zero,
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  fadeInCurve: Curves.easeOut,
+                  errorWidget: (context, url, error) => ColoredBox(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF1A1A1A)
+                        : const Color(0xFFE0E0E0),
+                    child: const Center(
+                      child: Icon(Icons.broken_image, color: Colors.grey),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -315,7 +281,7 @@ class _PinGridItemState extends State<PinGridItem> {
         InkWell(
           onTap: () {
             HapticFeedback.lightImpact();
-            _showPinOptionsSheet(context, widget.photo);
+            _showPinOptionsSheet(context, photo);
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
@@ -336,7 +302,7 @@ class _PinGridItemState extends State<PinGridItem> {
     );
   }
 
-  // Breakout Bottom Sheet Logic
+
   void _showPinOptionsSheet(BuildContext context, PexelsPhoto photo) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final sheetColor = isDark
@@ -417,9 +383,9 @@ class _PinGridItemState extends State<PinGridItem> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Color(0x4D000000),
                           blurRadius: 15,
                           spreadRadius: 2,
                         ),
@@ -471,7 +437,7 @@ class _PinGridItemState extends State<PinGridItem> {
       subtitle: subtitle != null
           ? Text(
               subtitle,
-              style: TextStyle(color: color.withOpacity(0.8), fontSize: 14),
+              style: TextStyle(color: color.withValues(alpha: 0.8), fontSize: 14),
             )
           : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
@@ -479,11 +445,34 @@ class _PinGridItemState extends State<PinGridItem> {
       onTap: () {},
     );
   }
+
+
+  Widget _buildTintedShimmer(BuildContext context, Color tint) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final baseColor = Color.lerp(
+      tint,
+      isDark ? Colors.grey[850]! : Colors.grey[300]!,
+      0.6,
+    )!;
+    final highlightColor = Color.lerp(
+      tint,
+      isDark ? Colors.grey[700]! : Colors.grey[100]!,
+      0.6,
+    )!;
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: ColoredBox(
+        color: baseColor,
+        child: const SizedBox.expand(),
+      ),
+    );
+  }
 }
 
-// ===========================================================================
-// The Radial Menu Overlay (Full Screen Blur & Absolute Positioning)
-// ===========================================================================
+// ==========================================================================
 class RadialItem {
   final IconData icon;
   final Offset offset;
@@ -511,17 +500,13 @@ class RadialMenuOverlay extends StatelessWidget {
         valueListenable: dragPositionNotifier,
         builder: (context, dragPos, child) {
           return BackdropFilter(
-            // Blurs the entire background heavily
             filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: SizedBox.expand(
               child: Stack(
                 children: [
-                  // 1. The Hollow Ring marking the original tap location
                   Positioned(
-                    left:
-                        initialPosition.dx -
-                        35, // Centered on tap X (70/2 = 35)
-                    top: initialPosition.dy - 35, // Centered on tap Y
+                    left: initialPosition.dx - 35,
+                    top: initialPosition.dy - 35,
                     child: Container(
                       width: 70,
                       height: 70,
@@ -532,15 +517,13 @@ class RadialMenuOverlay extends StatelessWidget {
                     ),
                   ),
 
-                  // 2. The Interactive Icons surrounding the tap
                   ...items.map((item) {
                     final itemCenter = initialPosition + item.offset;
                     final isHovered = (dragPos - itemCenter).distance < 40;
 
                     return Positioned(
-                      left: itemCenter.dx - 28, // 56/2 = 28
+                      left: itemCenter.dx - 28,
                       top: itemCenter.dy - 28,
-                      // The AnimatedScale makes the button "pop" smoothly when you drag over it
                       child: AnimatedScale(
                         scale: isHovered ? 1.3 : 1.0,
                         duration: const Duration(milliseconds: 150),
@@ -549,13 +532,11 @@ class RadialMenuOverlay extends StatelessWidget {
                           width: 56,
                           height: 56,
                           decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF333333,
-                            ), // Exact Pinterest dark grey
+                            color: const Color(0xFF333333),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
+                                color: const Color(0x66000000),
                                 blurRadius: isHovered ? 15 : 10,
                                 spreadRadius: isHovered ? 2 : 1,
                               ),
@@ -565,7 +546,7 @@ class RadialMenuOverlay extends StatelessWidget {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -574,27 +555,4 @@ class RadialMenuOverlay extends StatelessWidget {
       ),
     );
   }
-}
-
-// Theme-aware, perfectly rounded Shimmer placeholder
-Widget buildSmoothShimmer(BuildContext context) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-  // Match the shimmer perfectly to the current theme
-  final baseColor = isDark ? Colors.grey[850]! : Colors.grey[300]!;
-  final highlightColor = isDark ? Colors.grey[800]! : Colors.grey[100]!;
-  final containerColor = isDark ? const Color(0xFF2B2B2B) : Colors.white;
-
-  return Shimmer.fromColors(
-    baseColor: baseColor,
-    highlightColor: highlightColor,
-    child: Container(
-      // Removing the hardcoded 200 height and using a default generic height
-      // combined with a smooth radius prevents the ugly box flash
-      height: 250,
-      decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-    ),
-  );
 }

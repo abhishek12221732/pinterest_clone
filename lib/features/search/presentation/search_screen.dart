@@ -407,21 +407,27 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             itemCount: photos.length,
             itemBuilder: (context, index) {
               final photo = photos[index];
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: CachedNetworkImage(
-                  imageUrl: photo.imageUrl,
-                  memCacheWidth: 400,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => buildSmoothShimmer(context),
-                  fadeInDuration: const Duration(milliseconds: 400),
-                  fadeInCurve: Curves.easeOutCubic,
-                  errorWidget: (context, url, error) => Container(
-                    height: 250,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.grey[900]
-                        : Colors.grey[200],
-                    child: const Icon(Icons.broken_image, color: Colors.grey),
+              return RepaintBoundary(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: AspectRatio(
+                    aspectRatio: photo.aspectRatio,
+                    child: CachedNetworkImage(
+                      imageUrl: photo.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => _buildTintedShimmer(context, photo.avgColor),
+                      fadeOutDuration: Duration.zero,
+                      fadeInDuration: const Duration(milliseconds: 300),
+                      fadeInCurve: Curves.easeOut,
+                      errorWidget: (context, url, error) => ColoredBox(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF1A1A1A)
+                            : const Color(0xFFE0E0E0),
+                        child: const Center(
+                          child: Icon(Icons.broken_image, color: Colors.grey),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -449,21 +455,27 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           itemCount: photos.length > 8 ? 8 : photos.length,
           itemBuilder: (context, index) {
             final photo = photos[index];
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: CachedNetworkImage(
-                imageUrl: photo.imageUrl,
-                memCacheWidth: 400,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => buildSmoothShimmer(context),
-                fadeInDuration: const Duration(milliseconds: 400),
-                fadeInCurve: Curves.easeOutCubic,
-                errorWidget: (context, url, error) => Container(
-                  height: 250,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[900]
-                      : Colors.grey[200],
-                  child: const Icon(Icons.broken_image, color: Colors.grey),
+            return RepaintBoundary(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AspectRatio(
+                  aspectRatio: photo.aspectRatio,
+                  child: CachedNetworkImage(
+                    imageUrl: photo.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => _buildTintedShimmer(context, photo.avgColor),
+                    fadeOutDuration: Duration.zero,
+                    fadeInDuration: const Duration(milliseconds: 300),
+                    fadeInCurve: Curves.easeOut,
+                    errorWidget: (context, url, error) => ColoredBox(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF1A1A1A)
+                          : const Color(0xFFE0E0E0),
+                      child: const Center(
+                        child: Icon(Icons.broken_image, color: Colors.grey),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             );
@@ -522,22 +534,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   ];
 }
 
-// Theme-aware, perfectly rounded Shimmer placeholder
-Widget buildSmoothShimmer(BuildContext context) {
+/// Shimmer placeholder tinted to the photo's dominant color.
+Widget _buildTintedShimmer(BuildContext context, Color tint) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
-  final baseColor = isDark ? Colors.grey[850]! : Colors.grey[300]!;
-  final highlightColor = isDark ? Colors.grey[800]! : Colors.grey[100]!;
-  final containerColor = isDark ? const Color(0xFF2B2B2B) : Colors.white;
+  final baseColor = Color.lerp(
+    tint,
+    isDark ? Colors.grey[850]! : Colors.grey[300]!,
+    0.6,
+  )!;
+  final highlightColor = Color.lerp(
+    tint,
+    isDark ? Colors.grey[700]! : Colors.grey[100]!,
+    0.6,
+  )!;
 
   return Shimmer.fromColors(
     baseColor: baseColor,
     highlightColor: highlightColor,
-    child: Container(
-      height: 250,
-      decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+    child: ColoredBox(
+      color: baseColor,
+      child: const SizedBox.expand(),
     ),
   );
 }
